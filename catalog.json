@@ -20,7 +20,8 @@
       "description": "Мягкая игрушка-подушка с выразительными глазами и фирменными лапками. Около 50×25 см. Можно подвесить за хвост.",
       "price": 1990,
       "photos": [
-        "photos/01.jpg"
+        "photos/big_grey-mw9tv3lr0.jpg",
+        "photos/big_grey-mw9tv5ji0.jpg"
       ]
     },
     {
@@ -29,7 +30,17 @@
       "title": "Злой кот, бело-серый",
       "description": "Мягкая игрушка-подушка с выразительными глазами и фирменными лапками. Около 50×25 см. Можно подвесить за хвост.",
       "price": 1990,
-      "photos": []
+      "photos": [
+        "photos/big_white-mw9tu7q70.jpg",
+        "photos/big_white-mw9tua3r0.jpg",
+        "photos/big_white-mw9tucha0.jpg",
+        "photos/big_white-mw9tuekk0.jpg",
+        "photos/big_white-mw9tug8h0.jpg",
+        "photos/big_white-mw9tui7w0.jpg",
+        "photos/big_white-mw9tul5r0.jpg",
+        "photos/big_white-mw9tunp30.jpg",
+        "photos/big_white-mw9tuqq80.jpg"
+      ]
     },
     {
       "id": "big_bengal",
