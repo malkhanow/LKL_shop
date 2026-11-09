@@ -3,8 +3,14 @@
   "delivery_price": 350,
   "delivery_note": "Доставка через Яндекс/WB ПВЗ или Почтой России.",
   "categories": [
-    {"id": "big", "title": "Большие коты"},
-    {"id": "hang", "title": "Подвесные"}
+    {
+      "id": "big",
+      "title": "Большие коты"
+    },
+    {
+      "id": "hang",
+      "title": "Подвесные"
+    }
   ],
   "products": [
     {
@@ -13,7 +19,9 @@
       "title": "Злой кот, серый полосатый",
       "description": "Мягкая игрушка-подушка с выразительными глазами и фирменными лапками. Около 50×25 см. Можно подвесить за хвост.",
       "price": 1990,
-      "photos": ["photos/01.jpg"]
+      "photos": [
+        "photos/01.jpg"
+      ]
     },
     {
       "id": "big_white",
@@ -21,7 +29,12 @@
       "title": "Злой кот, бело-серый",
       "description": "Мягкая игрушка-подушка с выразительными глазами и фирменными лапками. Около 50×25 см. Можно подвесить за хвост.",
       "price": 1990,
-      "photos": ["photos/03.jpg", "photos/02.jpg", "photos/04.jpg", "photos/01.jpg"]
+      "photos": [
+        "photos/03.jpg",
+        "photos/02.jpg",
+        "photos/04.jpg",
+        "photos/01.jpg"
+      ]
     },
     {
       "id": "big_bengal",
@@ -29,7 +42,17 @@
       "title": "Злой кот, леопардовый",
       "description": "Мягкая игрушка-подушка с выразительными глазами и фирменными лапками. Около 50×25 см. Можно подвесить за хвост.",
       "price": 1990,
-      "photos": ["photos/01.jpg"]
+      "photos": [
+        "photos/big_bengal-mw9tq0k60.jpg",
+        "photos/big_bengal-mw9tq55f0.jpg",
+        "photos/big_bengal-mw9tqhoc0.jpg",
+        "photos/big_bengal-mw9tqjw90.jpg",
+        "photos/big_bengal-mw9tqlsg0.jpg",
+        "photos/big_bengal-mw9tqo7a0.jpg",
+        "photos/big_bengal-mw9tqrwp0.jpg",
+        "photos/big_bengal-mw9tqwxy0.jpg",
+        "photos/big_bengal-mw9tr0800.jpg"
+      ]
     },
     {
       "id": "big_orange",
@@ -37,7 +60,9 @@
       "title": "Злой кот, рыжий полосатый",
       "description": "Мягкая игрушка-подушка с выразительными глазами и фирменными лапками. Около 50×25 см. Можно подвесить за хвост.",
       "price": 1990,
-      "photos": ["photos/01.jpg"]
+      "photos": [
+        "photos/01.jpg"
+      ]
     },
     {
       "id": "hang_1",
