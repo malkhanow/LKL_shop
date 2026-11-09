@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Редактор магазина</title>
+<style>
+:root {
+  --bg: #f4f5f7; --card: #ffffff; --text: #1c1c1e; --muted: #6b7280; --line: #e5e7eb;
+  --accent: #2481cc; --accent-text: #ffffff; --danger: #d93025; --ok: #1a7f37; --soft: #eef2f6;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #111418; --card: #1b2027; --text: #f1f3f5; --muted: #9aa4b2; --line: #2b323c;
+          --accent: #4a9be0; --accent-text: #0b1220; --danger: #ff6b60; --ok: #4cc26a; --soft: #242b34; }
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text);
+  font: 16px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+[hidden] { display: none !important; }
+button, input, select, textarea { font: inherit; color: inherit; }
+.wrap { max-width: 760px; margin: 0 auto; padding: 0 14px; }
+
+.top { position: sticky; top: 0; z-index: 20; background: var(--card); border-bottom: 1px solid var(--line);
+  padding: 10px 0; padding-top: calc(10px + env(safe-area-inset-top, 0px)); }
+.top .wrap { display: flex; align-items: center; gap: 10px; }
+.top h1 { font-size: 17px; margin: 0; flex: 1; min-width: 0; }
+.top .st { font-size: 12px; color: var(--muted); display: block; font-weight: 400; }
+.top .st.dirty { color: var(--danger); }
+.link { color: var(--accent); text-decoration: none; font-size: 14px; background: none; border: 0; cursor: pointer; padding: 6px; }
+
+.btn { border: 0; border-radius: 10px; padding: 10px 14px; min-height: 40px; background: var(--accent); color: var(--accent-text);
+  font-weight: 600; cursor: pointer; }
+.btn.sec { background: var(--soft); color: var(--text); }
+.btn.danger { background: transparent; color: var(--danger); border: 1px solid var(--danger); }
+.btn.sm { padding: 6px 10px; min-height: 34px; font-size: 14px; }
+.btn[disabled] { opacity: .45; cursor: default; }
+
+.panel { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin: 14px 0; }
+.panel h2 { font-size: 16px; margin: 0 0 8px; }
+label { display: block; font-size: 13px; color: var(--muted); margin: 10px 0 4px; }
+input, select, textarea { width: 100%; border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 10px; }
+input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+textarea { min-height: 84px; resize: vertical; }
+.row { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+.row input { flex: 1; min-width: 0; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pc-body .cols { grid-template-columns: 1fr 1.5fr; }
+select { text-overflow: ellipsis; }
+
+.chips { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 8px; }
+.chip { border: 0; background: var(--soft); color: var(--text); padding: 7px 13px; border-radius: 16px; white-space: nowrap; cursor: pointer; }
+.chip.on { background: var(--accent); color: var(--accent-text); }
+
+.pc { background: var(--card); border: 1px solid var(--line); border-radius: 14px; margin: 10px 0; overflow: hidden; }
+.pc-head { display: flex; gap: 12px; align-items: center; padding: 10px; cursor: pointer; }
+.pc-head .th { width: 56px; height: 56px; border-radius: 10px; background: var(--soft); object-fit: cover; flex: none;
+  display: flex; align-items: center; justify-content: center; font-size: 26px; overflow: hidden; }
+.pc-head .th img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pc-head .meta { flex: 1; min-width: 0; }
+.pc-head .t { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pc-head .sub { font-size: 13px; color: var(--muted); }
+.pc-head .chev { color: var(--muted); transition: transform .15s; }
+.pc.open .chev { transform: rotate(180deg); }
+.pc-body { padding: 0 12px 12px; border-top: 1px solid var(--line); }
+
+.photos { display: flex; gap: 10px; overflow-x: auto; padding: 4px 0 8px; }
+.ph { flex: none; width: 112px; }
+.ph .im { position: relative; width: 112px; height: 112px; border-radius: 10px; overflow: hidden; background: var(--soft); }
+.ph .im img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ph .badge { position: absolute; left: 4px; top: 4px; background: var(--accent); color: var(--accent-text); font-size: 11px; font-weight: 600; padding: 2px 6px; border-radius: 6px; }
+.ph .badge.new { background: var(--ok); color: #fff; left: auto; right: 4px; }
+.ph .ctl { display: flex; gap: 4px; margin-top: 4px; }
+.ph .ctl button { flex: 1; border: 0; background: var(--soft); color: var(--text); border-radius: 8px; min-height: 34px; cursor: pointer; font-size: 16px; }
+.ph .ctl button.x { color: var(--danger); }
+.ph .ctl button[disabled] { opacity: .35; cursor: default; }
+.add-ph { flex: none; width: 112px; height: 112px; border: 2px dashed var(--line); border-radius: 10px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; color: var(--accent); font-weight: 600; cursor: pointer; text-align: center; font-size: 14px; }
+.add-ph b { font-size: 28px; line-height: 1; }
+.add-ph input { display: none; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+
+.fab { position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 30; border-radius: 28px; padding: 0 20px;
+  min-height: 52px; box-shadow: 0 6px 18px rgba(0,0,0,.28); font-size: 16px; }
+.empty { text-align: center; color: var(--muted); padding: 30px 0; }
+.toast { position: fixed; left: 14px; right: 14px; bottom: calc(80px + env(safe-area-inset-bottom, 0px)); z-index: 40; max-width: 520px; margin: 0 auto;
+  background: #2b2f36; color: #fff; padding: 12px 14px; border-radius: 12px; font-size: 14px; white-space: pre-line; }
+.toast.err { background: #b3261e; }
+.toast.ok { background: #1a7f37; }
+
+.login { max-width: 440px; margin: 7vh auto 0; }
+.login .panel { margin: 0; }
+.login p { color: var(--muted); font-size: 14px; margin: 6px 0 0; }
+.login .chk { display: flex; gap: 8px; align-items: center; font-size: 14px; color: var(--text); margin-top: 12px; }
+.login .chk input { width: auto; }
+.err-text { color: var(--danger); font-size: 14px; margin-top: 10px; white-space: pre-line; }
+</style>
+</head>
+<body>
+
+<div id="login" class="wrap login" hidden>
+  <div class="panel">
+    <h2>Редактор магазина</h2>
+    <p>Войдите токеном GitHub. Он нужен только чтобы сохранять изменения в ваш репозиторий.</p>
+    <label>Токен доступа GitHub (fine-grained)</label>
+    <input id="f-token" type="password" autocomplete="off" placeholder="github_pat_...">
+    <div class="cols">
+      <div><label>Владелец (логин GitHub)</label><input id="f-owner" autocapitalize="off" autocorrect="off"></div>
+      <div><label>Репозиторий</label><input id="f-repo" autocapitalize="off" autocorrect="off"></div>
+    </div>
+    <label class="chk"><input id="f-remember" type="checkbox" checked> Запомнить на этом устройстве</label>
+    <div id="login-err" class="err-text" hidden></div>
+    <div class="actions"><button id="btn-login" class="btn" style="width:100%">Войти</button></div>
+  </div>
+</div>
+
+<div id="editor" hidden>
+  <header class="top">
+    <div class="wrap">
+      <h1>Редактор<span id="st" class="st">Нет изменений</span></h1>
+      <a class="link" id="open-shop" href="./" target="_blank" rel="noopener">Магазин ↗</a>
+      <button class="link" id="btn-logout">Выйти</button>
+      <button class="btn" id="btn-save" disabled>Сохранить</button>
+    </div>
+  </header>
+  <main class="wrap" id="app"></main>
+  <button class="btn fab" id="btn-add" data-a="prod-add">+ Товар</button>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+
+<script>
+(() => {
+  "use strict";
+  const MAX_SIDE = 1280;
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const uid = (p) => p + Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-3);
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch { /* ignore */ } },
+    del(k) { try { localStorage.removeItem(k); } catch { /* ignore */ } },
+  };
+
+  const state = {
+    cfg: null, data: null, sha: null, branch: "main", dirty: false, saving: false,
+    filter: "all", open: new Set(), pending: new Map(), uploaded: new Set(),
+  };
+
+  // ---------- вспомогательное ----------
+  function toast(msg, kind) {
+    const el = $("#toast");
+    el.textContent = msg;
+    el.className = "toast" + (kind ? " " + kind : "");
+    el.hidden = false;
+    clearTimeout(toast.t);
+    toast.t = setTimeout(() => { el.hidden = true; }, kind === "err" ? 7000 : 3500);
+  }
+  function setDirty(v) {
+    state.dirty = v;
+    const st = $("#st");
+    st.textContent = v ? "Не сохранено" : "Нет изменений";
+    st.className = "st" + (v ? " dirty" : "");
+    $("#btn-save").disabled = !v || state.saving;
+  }
+  const strToB64 = (str) => {
+    const bytes = new TextEncoder().encode(str);
+    let bin = "";
+    for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    return btoa(bin);
+  };
+  const b64ToStr = (b64) => new TextDecoder().decode(Uint8Array.from(atob(b64.replace(/\s/g, "")), (c) => c.charCodeAt(0)));
+  const blobToB64 = (blob) => new Promise((res, rej) => {
+    const fr = new FileReader();
+    fr.onload = () => res(String(fr.result).split(",")[1]);
+    fr.onerror = () => rej(fr.error);
+    fr.readAsDataURL(blob);
+  });
+  const encPath = (p) => p.split("/").map(encodeURIComponent).join("/");
+
+  // ---------- GitHub API ----------
+  async function gh(path, opts = {}) {
+    const headers = {
+      Accept: "application/vnd.github+json",
+      Authorization: "Bearer " + state.cfg.token,
+      "X-GitHub-Api-Version": "2022-11-28",
+    };
+    if (opts.body) headers["Content-Type"] = "application/json";
+    let r;
+    try {
+      r = await fetch("https://api.github.com" + path, { ...opts, headers });
+    } catch {
+      const e = new Error("Нет связи с GitHub. Проверьте интернет."); e.status = 0; throw e;
+    }
+    let j = null;
+    try { j = await r.json(); } catch { /* пустой ответ */ }
+    if (!r.ok) {
+      const e = new Error((j && j.message) || "Ошибка " + r.status);
+      e.status = r.status;
+      throw e;
+    }
+    return j;
+  }
+  function explain(e) {
+    if (e.status === 401) return "GitHub не принял токен: он неверный или истёк. Создайте новый и войдите снова.";
+    if (e.status === 403) return "Нет прав. У токена должно быть разрешение Contents: Read and write на этот репозиторий.";
+    if (e.status === 404) return "Репозиторий или catalog.json не найден. Проверьте владельца и название репозитория и права токена.";
+    if (e.status === 409 || e.status === 422) return "Файл на GitHub изменился в другом месте. Обновите страницу (изменения этой страницы будут потеряны) и повторите.";
+    return e.message;
+  }
+
+  // ---------- вход ----------
+  function showLogin(err) {
+    $("#editor").hidden = true;
+    $("#login").hidden = false;
+    const el = $("#login-err");
+    el.hidden = !err;
+    el.textContent = err || "";
+  }
+  function guessRepo() {
+    const m = location.hostname.match(/^([^.]+)\.github\.io$/);
+    return { owner: m ? m[1] : "", repo: m ? (location.pathname.split("/")[1] || "") : "" };
+  }
+  async function connect(cfg, remember) {
+    state.cfg = cfg;
+    const repo = await gh(`/repos/${encodeURIComponent(cfg.owner)}/${encodeURIComponent(cfg.repo)}`);
+    state.branch = repo.default_branch || "main";
+    if (repo.permissions && repo.permissions.push === false) {
+      throw Object.assign(new Error("У токена нет права записи в этот репозиторий."), { status: 403 });
+    }
+    const f = await gh(`/repos/${encodeURIComponent(cfg.owner)}/${encodeURIComponent(cfg.repo)}/contents/catalog.json?ref=${encodeURIComponent(state.branch)}`);
+    state.data = JSON.parse(b64ToStr(f.content));
+    state.sha = f.sha;
+    normalize();
+    if (remember) store.set("shopadmin.cfg", JSON.stringify(cfg)); else store.del("shopadmin.cfg");
+    $("#login").hidden = true;
+    $("#editor").hidden = false;
+    setDirty(false);
+    render();
+  }
+  function normalize() {
+    const d = state.data;
+    d.shop_name = d.shop_name ?? "";
+    d.delivery_price = Number(d.delivery_price) || 0;
+    d.delivery_note = d.delivery_note ?? "";
+    d.categories = Array.isArray(d.categories) ? d.categories : [];
+    d.products = Array.isArray(d.products) ? d.products : [];
+    d.products.forEach((p) => {
+      p.title = p.title ?? ""; p.description = p.description ?? "";
+      p.price = Number(p.price) || 0; p.photos = Array.isArray(p.photos) ? p.photos : [];
+    });
+  }
+
+  // ---------- отрисовка ----------
+  const photoSrc = (path) => (state.pending.has(path) ? state.pending.get(path).url : path);
+  const catTitle = (id) => { const c = state.data.categories.find((x) => x.id === id); return c ? c.title : "без раздела"; };
+  const visible = (p) => state.filter === "all" || p.category === state.filter;
+  const rub = (n) => (Number(n) ? Number(n).toLocaleString("ru-RU") + " ₽" : "цена не указана");
+
+  function photosHTML(p, i) {
+    const items = p.photos.map((src, k) => `
+      <div class="ph">
+        <div class="im"><img src="${esc(photoSrc(src))}" alt="" onerror="this.style.opacity=.2">
+          ${k === 0 ? '<span class="badge">Обложка</span>' : ""}${state.pending.has(src) ? '<span class="badge new">новое</span>' : ""}</div>
+        <div class="ctl">
+          <button data-a="ph-left" data-i="${i}" data-k="${k}" ${k === 0 ? "disabled" : ""} title="Левее">◀</button>
+          <button data-a="ph-right" data-i="${i}" data-k="${k}" ${k === p.photos.length - 1 ? "disabled" : ""} title="Правее">▶</button>
+          <button class="x" data-a="ph-del" data-i="${i}" data-k="${k}" title="Убрать фото">✕</button>
+        </div>
+      </div>`).join("");
+    return `<div class="photos">${items}
+      <label class="add-ph"><b>+</b>Добавить фото<input type="file" accept="image/*" multiple data-a="ph-add" data-i="${i}"></label></div>`;
+  }
+
+  function productHTML(p, i) {
+    const open = state.open.has(p.id);
+    const cover = p.photos[0];
+    const cats = state.data.categories.map((c) =>
+      `<option value="${esc(c.id)}" ${c.id === p.category ? "selected" : ""}>${esc(c.title)}</option>`).join("");
+    return `<article class="pc ${open ? "open" : ""}" data-i="${i}">
+      <div class="pc-head" data-a="toggle" data-i="${i}">
+        <div class="th">${cover ? `<img src="${esc(photoSrc(cover))}" alt="" onerror="this.style.opacity=.2">` : "🐱"}</div>
+        <div class="meta"><div class="t">${esc(p.title) || "Без названия"}</div><div class="sub">${esc(rub(p.price))} · ${esc(catTitle(p.category))}</div></div>
+        <span class="chev">▾</span>
+      </div>
+      <div class="pc-body" ${open ? "" : "hidden"}>
+        <label>Название</label>
+        <input data-p="title" data-i="${i}" value="${esc(p.title)}">
+        <div class="cols">
+          <div><label>Цена, ₽</label><input data-p="price" data-i="${i}" type="number" inputmode="decimal" min="0" value="${p.price || ""}"></div>
+          <div><label>Раздел</label><select data-p="category" data-i="${i}">${cats}</select></div>
+        </div>
+        <label>Описание</label>
+        <textarea data-p="description" data-i="${i}">${esc(p.description)}</textarea>
+        <label>Фото (первое показывается в каталоге)</label>
+        ${photosHTML(p, i)}
+        <div class="actions">
+          <button class="btn sec sm" data-a="mv-up" data-i="${i}">↑ Выше</button>
+          <button class="btn sec sm" data-a="mv-down" data-i="${i}">↓ Ниже</button>
+          <button class="btn sec sm" data-a="dup" data-i="${i}">Дублировать</button>
+          <button class="btn danger sm" data-a="del" data-i="${i}">Удалить товар</button>
+        </div>
+      </div>
+    </article>`;
+  }
+
+  function render() {
+    const d = state.data;
+    if (state.filter !== "all" && !d.categories.some((c) => c.id === state.filter)) state.filter = "all";
+    const chips = [`<button class="chip ${state.filter === "all" ? "on" : ""}" data-a="filter" data-id="all">Все (${d.products.length})</button>`]
+      .concat(d.categories.map((c) =>
+        `<button class="chip ${state.filter === c.id ? "on" : ""}" data-a="filter" data-id="${esc(c.id)}">${esc(c.title)} (${d.products.filter((p) => p.category === c.id).length})</button>`)).join("");
+    const list = d.products.map((p, i) => (visible(p) ? productHTML(p, i) : "")).join("");
+    const cats = d.categories.map((c, i) => `
+      <div class="row">
+        <input data-c="title" data-i="${i}" value="${esc(c.title)}">
+        <button class="btn sec sm" data-a="cat-up" data-i="${i}" title="Левее">↑</button>
+        <button class="btn sec sm" data-a="cat-down" data-i="${i}" title="Правее">↓</button>
+        <button class="btn danger sm" data-a="cat-del" data-i="${i}" title="Удалить">✕</button>
+      </div>`).join("");
+    $("#app").innerHTML = `
+      <section class="panel">
+        <h2>Товары</h2>
+        <div class="chips">${chips}</div>
+        ${list || '<div class="empty">Здесь пока пусто. Нажмите «+ Товар».</div>'}
+      </section>
+      <section class="panel">
+        <h2>Разделы каталога</h2>
+        ${cats}
+        <div class="actions"><button class="btn sec sm" data-a="cat-add">+ Раздел</button></div>
+      </section>
+      <section class="panel">
+        <h2>Магазин</h2>
+        <label>Название магазина</label>
+        <input data-f="shop_name" value="${esc(d.shop_name)}">
+        <label>Стоимость доставки, ₽</label>
+        <input data-f="delivery_price" type="number" inputmode="decimal" min="0" value="${d.delivery_price}">
+        <label>Текст про доставку (виден в корзине)</label>
+        <textarea data-f="delivery_note">${esc(d.delivery_note)}</textarea>
+      </section>`;
+  }
+
+  function refreshHead(i) {
+    const p = state.data.products[i];
+    const card = $(`.pc[data-i="${i}"]`);
+    if (!card) return;
+    card.querySelector(".t").textContent = p.title || "Без названия";
+    card.querySelector(".sub").textContent = rub(p.price) + " · " + catTitle(p.category);
+  }
+
+  // ---------- фото ----------
+  async function toJpegBlob(file) {
+    let bmp;
+    try { bmp = await createImageBitmap(file); }
+    catch {
+      bmp = await new Promise((res, rej) => {
+        const u = URL.createObjectURL(file); const im = new Image();
+        im.onload = () => { URL.revokeObjectURL(u); res(im); };
+        im.onerror = () => { URL.revokeObjectURL(u); rej(new Error("Не удалось прочитать файл " + file.name)); };
+        im.src = u;
+      });
+    }
+    const w0 = bmp.width || bmp.naturalWidth, h0 = bmp.height || bmp.naturalHeight;
+    const k = Math.min(1, MAX_SIDE / Math.max(w0, h0));
+    const c = document.createElement("canvas");
+    c.width = Math.max(1, Math.round(w0 * k)); c.height = Math.max(1, Math.round(h0 * k));
+    const g = c.getContext("2d");
+    g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height);
+    g.drawImage(bmp, 0, 0, c.width, c.height);
+    if (bmp.close) bmp.close();
+    return new Promise((res, rej) => c.toBlob((b) => (b ? res(b) : rej(new Error("Не удалось сжать фото"))), "image/jpeg", 0.86));
+  }
+  const referenced = (path) => state.data.products.some((p) => p.photos.includes(path));
+  function dropPendingIfUnused(path) {
+    if (state.pending.has(path) && !referenced(path)) {
+      URL.revokeObjectURL(state.pending.get(path).url);
+      state.pending.delete(path);
+    }
+  }
+  async function addPhotos(i, files) {
+    const p = state.data.products[i];
+    if (!p || !files.length) return;
+    toast("Обрабатываю фото…");
+    let n = 0;
+    for (const file of files) {
+      try {
+        const blob = await toJpegBlob(file);
+        const path = `photos/${p.id}-${Date.now().toString(36)}${n++}.jpg`;
+        state.pending.set(path, { blob, url: URL.createObjectURL(blob) });
+        p.photos.push(path);
+      } catch (e) { toast(e.message, "err"); }
+    }
+    setDirty(true);
+    state.open.add(p.id);
+    render();
+    toast(`Добавлено фото: ${n}. Не забудьте «Сохранить».`, "ok");
+  }
+
+  // ---------- действия ----------
+  function moveProduct(i, dir) {
+    const a = state.data.products;
+    let j = i + dir;
+    while (j >= 0 && j < a.length && !visible(a[j])) j += dir;
+    if (j < 0 || j >= a.length) return;
+    [a[i], a[j]] = [a[j], a[i]];
+    setDirty(true); render();
+  }
+  function addProduct() {
+    const d = state.data;
+    if (!d.categories.length) { toast("Сначала создайте раздел ниже.", "err"); return; }
+    const category = state.filter !== "all" ? state.filter : d.categories[0].id;
+    const p = { id: uid("p_"), category, title: "", description: "", price: 0, photos: [] };
+    d.products.push(p);
+    state.open.add(p.id);
+    setDirty(true); render();
+    const card = $(`.pc[data-i="${d.products.length - 1}"]`);
+    if (card) { card.scrollIntoView({ behavior: "smooth", block: "start" }); const t = card.querySelector('[data-p="title"]'); if (t) t.focus({ preventScroll: true }); }
+  }
+  function dupProduct(i) {
+    const d = state.data, src = d.products[i];
+    const p = JSON.parse(JSON.stringify(src));
+    p.id = uid("p_"); p.title = (src.title || "Товар") + " (копия)";
+    d.products.splice(i + 1, 0, p);
+    state.open.add(p.id);
+    setDirty(true); render();
+  }
+  function delProduct(i) {
+    const p = state.data.products[i];
+    if (!confirm(`Удалить товар «${p.title || "Без названия"}»?`)) return;
+    state.data.products.splice(i, 1);
+    p.photos.forEach(dropPendingIfUnused);
+    state.open.delete(p.id);
+    setDirty(true); render();
+  }
+  function movePhoto(i, k, dir) {
+    const ph = state.data.products[i].photos, j = k + dir;
+    if (j < 0 || j >= ph.length) return;
+    [ph[k], ph[j]] = [ph[j], ph[k]];
+    setDirty(true); render();
+  }
+  function delPhoto(i, k) {
+    const [path] = state.data.products[i].photos.splice(k, 1);
+    dropPendingIfUnused(path);
+    setDirty(true); render();
+  }
+  function addCategory() {
+    state.data.categories.push({ id: uid("c_"), title: "Новый раздел" });
+    setDirty(true); render();
+    const inputs = document.querySelectorAll("[data-c=title]");
+    const last = inputs[inputs.length - 1];
+    if (last) { last.focus(); last.select(); }
+  }
+  function delCategory(i) {
+    const c = state.data.categories[i];
+    const n = state.data.products.filter((p) => p.category === c.id).length;
+    if (n) { toast(`В разделе «${c.title}» есть товары (${n}). Сначала перенесите или удалите их.`, "err"); return; }
+    if (!confirm(`Удалить раздел «${c.title}»?`)) return;
+    state.data.categories.splice(i, 1);
+    setDirty(true); render();
+  }
+  function moveCategory(i, dir) {
+    const a = state.data.categories, j = i + dir;
+    if (j < 0 || j >= a.length) return;
+    [a[i], a[j]] = [a[j], a[i]];
+    setDirty(true); render();
+  }
+
+  // ---------- события ----------
+  document.addEventListener("click", (e) => {
+    const el = e.target.closest("[data-a]");
+    if (!el || el.tagName === "INPUT") return;
+    const a = el.dataset.a, i = Number(el.dataset.i), k = Number(el.dataset.k);
+    switch (a) {
+      case "toggle": { const id = state.data.products[i].id; state.open.has(id) ? state.open.delete(id) : state.open.add(id); render(); break; }
+      case "filter": state.filter = el.dataset.id; render(); break;
+      case "prod-add": addProduct(); break;
+      case "mv-up": moveProduct(i, -1); break;
+      case "mv-down": moveProduct(i, 1); break;
+      case "dup": dupProduct(i); break;
+      case "del": delProduct(i); break;
+      case "ph-left": movePhoto(i, k, -1); break;
+      case "ph-right": movePhoto(i, k, 1); break;
+      case "ph-del": delPhoto(i, k); break;
+      case "cat-add": addCategory(); break;
+      case "cat-up": moveCategory(i, -1); break;
+      case "cat-down": moveCategory(i, 1); break;
+      case "cat-del": delCategory(i); break;
+    }
+  });
+  document.addEventListener("change", async (e) => {
+    const t = e.target;
+    if (t.dataset && t.dataset.a === "ph-add") {
+      const files = [...t.files];
+      t.value = "";
+      await addPhotos(Number(t.dataset.i), files);
+    }
+  });
+  document.addEventListener("input", (e) => {
+    const t = e.target, d = state.data;
+    if (!d || !t.dataset) return;
+    if (t.dataset.p) {
+      const i = Number(t.dataset.i), p = d.products[i], f = t.dataset.p;
+      p[f] = f === "price" ? Number(t.value) || 0 : t.value;
+      setDirty(true); refreshHead(i);
+    } else if (t.dataset.c) {
+      d.categories[Number(t.dataset.i)].title = t.value; setDirty(true);
+    } else if (t.dataset.f) {
+      d[t.dataset.f] = t.dataset.f === "delivery_price" ? Number(t.value) || 0 : t.value; setDirty(true);
+    }
+  });
+  window.addEventListener("beforeunload", (e) => { if (state.dirty) { e.preventDefault(); e.returnValue = ""; } });
+
+  // ---------- сохранение ----------
+  function validate() {
+    const d = state.data, errs = [];
+    if (!d.categories.length) errs.push("Нужен хотя бы один раздел.");
+    d.categories.forEach((c) => { if (!c.title.trim()) errs.push("У одного из разделов пустое название."); });
+    d.products.forEach((p, n) => {
+      const name = p.title.trim() || `Товар №${n + 1}`;
+      if (!p.title.trim()) errs.push(`${name}: нет названия.`);
+      if (!(Number(p.price) > 0)) errs.push(`${name}: укажите цену.`);
+      if (!d.categories.some((c) => c.id === p.category)) errs.push(`${name}: не выбран раздел.`);
+    });
+    if (!(Number(d.delivery_price) >= 0)) errs.push("Стоимость доставки указана неверно.");
+    return errs;
+  }
+  async function save() {
+    if (state.saving || !state.dirty) return;
+    const errs = validate();
+    if (errs.length) { toast("Исправьте:\n" + errs.slice(0, 6).join("\n"), "err"); return; }
+    state.saving = true; $("#btn-save").disabled = true; $("#btn-save").textContent = "Сохраняю…";
+    const { owner, repo } = state.cfg;
+    const base = `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/`;
+    try {
+      const toUpload = [...state.pending.keys()].filter((p) => referenced(p) && !state.uploaded.has(p));
+      let n = 0;
+      for (const path of toUpload) {
+        n++; $("#btn-save").textContent = `Фото ${n}/${toUpload.length}…`;
+        await gh(base + encPath(path), { method: "PUT", body: JSON.stringify({
+          message: "Фото товара (редактор магазина)", content: await blobToB64(state.pending.get(path).blob), branch: state.branch }) });
+        state.uploaded.add(path);
+      }
+      $("#btn-save").textContent = "Сохраняю каталог…";
+      const res = await gh(base + "catalog.json", { method: "PUT", body: JSON.stringify({
+        message: "Обновление каталога (редактор магазина)", content: strToB64(JSON.stringify(state.data, null, 2) + "\n"),
+        sha: state.sha, branch: state.branch }) });
+      state.sha = res.content.sha;
+      setDirty(false);
+      toast("Сохранено. В магазине изменения появятся через 1–5 минут.", "ok");
+    } catch (e) {
+      toast(explain(e), "err");
+    } finally {
+      state.saving = false; $("#btn-save").textContent = "Сохранить"; $("#btn-save").disabled = !state.dirty;
+    }
+  }
+
+  // ---------- старт ----------
+  $("#btn-save").addEventListener("click", save);
+  $("#btn-logout").addEventListener("click", () => {
+    if (state.dirty && !confirm("Есть несохранённые изменения. Выйти без сохранения?")) return;
+    store.del("shopadmin.cfg"); state.dirty = false; location.reload();
+  });
+  $("#btn-login").addEventListener("click", async () => {
+    const cfg = { token: $("#f-token").value.trim(), owner: $("#f-owner").value.trim(), repo: $("#f-repo").value.trim() };
+    if (!cfg.token || !cfg.owner || !cfg.repo) { showLogin("Заполните все три поля."); return; }
+    $("#btn-login").disabled = true; $("#btn-login").textContent = "Проверяю…";
+    try { await connect(cfg, $("#f-remember").checked); }
+    catch (e) { showLogin(explain(e)); }
+    finally { $("#btn-login").disabled = false; $("#btn-login").textContent = "Войти"; }
+  });
+
+  (async function init() {
+    const g = guessRepo();
+    $("#f-owner").value = g.owner; $("#f-repo").value = g.repo;
+    let saved = null;
+    try { saved = JSON.parse(store.get("shopadmin.cfg") || "null"); } catch { /* ignore */ }
+    if (saved && saved.token && saved.owner && saved.repo) {
+      $("#f-owner").value = saved.owner; $("#f-repo").value = saved.repo;
+      try { await connect(saved, true); return; }
+      catch (e) { showLogin(explain(e)); return; }
+    }
+    showLogin();
+  })();
+})();
+</script>
+</body>
+</html>
