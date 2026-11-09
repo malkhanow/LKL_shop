@@ -100,15 +100,17 @@
 
   function viewDetail() {
     const p = products[detailId];
-    const gallery = p.photos && p.photos.length
-      ? p.photos.map(img).join("") : '<div class="ph">🐱</div>';
+    const photos = p.photos && p.photos.length ? p.photos : [];
+    const gallery = photos.length
+      ? photos.map((src) => `<div class="slide">${img(src)}</div>`).join("")
+      : '<div class="slide"><div class="ph">🐱</div></div>';
     return `<button class="back" data-a="list">← Каталог</button>
-      <div class="gallery">${gallery}</div>
+      <div class="gallery ${photos.length > 1 ? "" : "single"}">${gallery}</div>
       <h2>${esc(p.title)}</h2>
       <p><b>${rub(p.price)}</b></p>
       <p>${esc(p.description)}</p>
-      <div>${ctl(p.id)}</div>
-      ${count() ? `<button class="btn cartbar" data-a="cart">Корзина · ${count()} шт · ${rub(goodsSum())}</button>` : ""}`;
+      <div class="detailctl">${ctl(p.id)}</div>
+      ${count() ?`<button class="btn cartbar" data-a="cart">Корзина · ${count()} шт · ${rub(goodsSum())}</button>` : ""}`;
   }
 
   function viewCart() {
@@ -124,7 +126,7 @@
     }).join("");
     const d = delivery();
     return `<button class="back" data-a="list">← Каталог</button><h1>Корзина</h1>${lines}
-      <div class="line"><div class="nm muted">Доставка</div><div class="sm">${d ? rub(d) : "—"}</div></div>
+      <div class="line dl"><div class="nm muted">Доставка</div><div class="sm">${d ? rub(d) : "—"}</div></div>
       <div class="total"><span>Итого</span><span>${rub(totalSum())}</span></div>
       <p class="muted">${esc(catalog.delivery_note || "")}</p>
       <button class="btn" data-a="checkout">Оформить заказ</button>`;
