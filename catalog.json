@@ -1,7 +1,7 @@
 {
-  "shop_name": "Custom Studio",
+  "shop_name": "Лапки к Лапкам",
   "delivery_price": 350,
-  "delivery_note": "Доставка СДЭК или Почтой России, фиксированная ставка (ЗАМЕНИТЕ НА СВОИ УСЛОВИЯ).",
+  "delivery_note": "Доставка через Яндекс/WB ПВЗ или Почтой России.",
   "categories": [
     {"id": "big", "title": "Большие коты"},
     {"id": "hang", "title": "Подвесные"}
