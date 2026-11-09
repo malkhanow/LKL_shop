@@ -16,18 +16,25 @@
     {
       "id": "big_grey",
       "category": "big",
-      "title": "Злой кот, серый полосатый",
+      "title": "Злой кот, Сережа",
       "description": "Мягкая игрушка-подушка с выразительными глазами и фирменными лапками. Около 50×25 см. Можно подвесить за хвост.",
       "price": 1990,
       "photos": [
         "photos/big_grey-mw9tv3lr0.jpg",
-        "photos/big_grey-mw9tv5ji0.jpg"
+        "photos/big_grey-mw9tv5ji0.jpg",
+        "photos/big_grey-mw9tv7g60.jpg",
+        "photos/big_grey-mw9tv9f50.jpg",
+        "photos/big_grey-mw9tvb4a0.jpg",
+        "photos/big_grey-mw9tvd2y0.jpg",
+        "photos/big_grey-mw9tvfo00.jpg",
+        "photos/big_grey-mw9tvik90.jpg",
+        "photos/big_grey-mw9tvlf10.jpg"
       ]
     },
     {
       "id": "big_white",
       "category": "big",
-      "title": "Злой кот, бело-серый",
+      "title": "Злой кот, Леня",
       "description": "Мягкая игрушка-подушка с выразительными глазами и фирменными лапками. Около 50×25 см. Можно подвесить за хвост.",
       "price": 1990,
       "photos": [
